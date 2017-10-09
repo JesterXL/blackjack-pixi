@@ -1,46 +1,21 @@
 const log = console.log;
 
-const union = require('folktale/adt/union/union');
-const Equality = require('folktale/adt/union/derivations/equality');
-const _ = require('lodash');
+import './node_modules/folktale/dist/umd/folktale.js';
+const union = folktale.adt.union.union;
+const Equality = folktale.adt.union.derivations.equality;
+import _ from './node_modules/lodash-es/lodash.js';
 
 // -- Types ----------------------------------------
-
-const CardValue = union('CardValue', {
-    RegularValue(value) { return { value } },
-    AceValues() { return {value: [1, 11]} }
-});
+import {
+    CardValue,
+    Suit,
+    Card,
+    Player,
+    GameOver
+} from './types.js';
 const { RegularValue, AceValues } = CardValue;
-
-const Suit = union('Suit', {
-    Club(){ return {value: '♣ club'} },
-    Diamond(){ return {value: '♦ diamond'} },
-    Heart(){ return {value: '♥ heart'} },
-    Spade(){ return {value: '♠ spade'} }
-});
 const { Club, Diamond, Heart, Spade } = Suit;
-
-const Card = union('Card', {
-    Jack(suit){ return {value: 'Jack', suit, cardValue: RegularValue(10)} },
-    Queen(suit){ return {value: 'Queen', suit, cardValue: RegularValue(10)} },
-    King(suit){ return {value: 'King', suit, cardValue: RegularValue(10)} },
-    Ace(suit) { return {value: 'Ace', suit, cardValue: AceValues() }},
-    NoFace(suit, cardValue) { return {value: 'No Face', suit, cardValue} }
-})
-.derive(Equality);
 const { Jack, Queen, King, Ace, NoFace } = Card;
-
-const Player = union('Player', {
-    Dealer(cards) { return {value: cards} },
-    Normal(cards) { return {value: cards} }
-});
-
-const GameOver = union('GameOver', {
-    PlayerWin(reason) { return { value: reason }},
-    DealerWin(reason) { return { value: reason }},
-    Tie(reason) { return {value: reason }}
-});
-
 
 // -- Factory Functions ----------------------------------------
 
@@ -134,7 +109,7 @@ const dealerBlackJack = (player, dealer) => isBlackjack(player) === false && isB
 const hasAce = cards => _.findIndex(cards, card => Ace.hasInstance(card)) > -1;
 const soft17 = cards => getCardsScore(cards) === 17 && hasAce(cards);
 
-function *game()
+export function *game()
 {
     const deck = createNewShuffledDeck();
     yield {type: 'deck', deck};
@@ -264,6 +239,3 @@ function *game()
 // log(newGame.next().value.type);
 // log(newGame.next().value.type);
 // log(newGame.next('hit').value);
-
-module.exports = {
-};

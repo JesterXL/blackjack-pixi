@@ -1,30 +1,80 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Hello World</title>
+	<meta charset="utf-8">
+	<title>Hello World</title>
 </head>
-  
+	
 <body>
-    <script type="module">
-        import _ from './node_modules/lodash-es/lodash.js';
-        import './node_modules/pixi.js/dist/pixi.js';
-        import './node_modules/folktale/dist/umd/folktale.js';
+		<script type="module">
+				import _ from './node_modules/lodash-es/lodash.js';
+				import './node_modules/pixi.js/dist/pixi.js';
+				import './node_modules/folktale/dist/umd/folktale.js';
+				import CardComponent from './CardComponent.js';
 
-        const log = console.log;
-        const app = new PIXI.Application();
-        const Maybe = folktale.maybe;
-        document.body.appendChild(app.view);
+				import {
+					CardValue,
+					Suit,
+					Card,
+					Player,
+					GameOver
+			} from './types.js';
+				import { game } from './index.js';
 
-        
-        const lake = new PIXI.Graphics();
-        lake.interactive = true;
-        lake.beginFill(0x01ADFB);
-        lake.drawRect(0, 0, app.renderer.width, app.renderer.height);
-        app.stage.addChild(lake);
+				const log = console.log;
+				const app = new PIXI.Application();
+				const Maybe = folktale.maybe;
+				document.body.appendChild(app.view);
 
-        
+				
+				const lake = new PIXI.Graphics();
+				lake.interactive = true;
+				lake.beginFill(0x01ADFB);
+				lake.drawRect(0, 0, app.renderer.width, app.renderer.height);
+				app.stage.addChild(lake);
 
-        </script>
+				// const sampleCard = Card.NoFace(Suit.Club(), CardValue.RegularValue(2));
+				// const card = new CardComponent(app.stage, sampleCard);
+				// card.scale.x = 0.25;
+				// card.scale.y = 0.25;
+
+				const drawHand = (cards, score, startX, startY, isDealer=false) => {
+						const titleTextValue = isDealer ? 'Dealer' : 'You';
+						const titleText = new PIXI.Text(`${titleTextValue}`, {fontFamily : 'Arial', fontSize: 24, fill : 0xFFFFFF, align : 'center'});
+						app.stage.addChild(titleText);
+						titleText.x = startX;
+						const scoreText = new PIXI.Text(`Total: ${score}`, {fontFamily : 'Arial', fontSize: 18, fill : 0xFFFFFF, align : 'center'});
+						scoreText.x = startX;
+						scoreText.y = titleText.y + titleText.height;
+						startY = scoreText.y + scoreText.height;
+						app.stage.addChild(scoreText);
+						const cardComponents = _.chain(cards)
+						.map(card => {
+							const cardComponent = new CardComponent(app.stage, card, startX, startY);
+							startX += cardComponent.width;
+							return cardComponent
+						})
+						.value();
+						return {scoreText, cardComponents};
+				};
+
+
+
+				const newGame = game();
+				const initialDeck = newGame.next().value.deck;
+				let player, score, dealer, value;
+				value = newGame.next().value;
+				player = value.player;
+				score = value.score;
+				drawHand(player, score, 20, 40);
+				value = newGame.next().value;
+				dealer = value.dealer;
+				score = value.score;
+				drawHand(dealer, score, 300, 40, true);
+				
+
+				
+
+				</script>
 </body>
 </html>
