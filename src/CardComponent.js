@@ -11,37 +11,26 @@ const log = console.log;
 
 export default class CardComponent extends PIXI.Container
 {
+    get card() {
+        return this._card;
+    }
+    set card(value) {
+        const me = this;
+        me._card = value;
+        me.redraw();
+    }
+
+    static get SCALE_VALUE() { return 0.25 };
+
     constructor(parent=null, card, x=0, y=0)
     {
-        const suitName = card.suit.matchWith({
-            Club: ({value}) => 'clubs',
-            Diamond: ({value}) => 'diamonds',
-            Heart: ({value}) => 'hearts',
-            Spade: ({value}) => 'spades'
-        });
-        const valueName = card.cardValue.matchWith({
-            RegularValue: ({value}) => value,
-            AceValues: ({value}) => 'ace'
-        });
-        const imageNameFromCard = card.matchWith({
-            Jack: ({value}) => `jack_of_${suitName}`,
-            Queen: ({value}) => `queen_of_${suitName}`,
-            King: ({value}) => `king_of_${suitName}`,
-            Ace: ({value}) => `ace_of_${suitName}`,
-            NoFace: ({value}) => `${valueName}_of_${suitName}`,
-        });
         super();
         const me = this;
         
-        const scaleValue = 0.25;
         const background = new CardBackground(me);
-        background.scale.x = scaleValue;
-        background.scale.y = scaleValue;
-        const sprite = PIXI.Sprite.fromImage(`./images/cards/${imageNameFromCard}.png`);
-        me.addChild(sprite);
-        sprite.scale.x = scaleValue;
-        sprite.scale.y = scaleValue;
-        
+        background.scale.x = CardComponent.SCALE_VALUE;
+        background.scale.y = CardComponent.SCALE_VALUE;
+
         if(parent)
         {
             parent.addChild(me);
@@ -49,6 +38,45 @@ export default class CardComponent extends PIXI.Container
 
         me.x = x;
         me.y = y;
+
+        me.card = card;
+    }
+
+    redraw() {
+        const me = this;
+
+        if(me.cardSprite)
+        {
+            me.removeChild(me.cardSprite);
+        }
+
+        if(me.card === undefined)
+        {
+            return;
+        }
+
+        const suitName = me.card.suit.matchWith({
+            Club: ({value}) => 'clubs',
+            Diamond: ({value}) => 'diamonds',
+            Heart: ({value}) => 'hearts',
+            Spade: ({value}) => 'spades'
+        });
+        const valueName = me.card.cardValue.matchWith({
+            RegularValue: ({value}) => value,
+            AceValues: ({value}) => 'ace'
+        });
+        const imageNameFromCard = me.card.matchWith({
+            Jack: ({value}) => `jack_of_${suitName}`,
+            Queen: ({value}) => `queen_of_${suitName}`,
+            King: ({value}) => `king_of_${suitName}`,
+            Ace: ({value}) => `ace_of_${suitName}`,
+            NoFace: ({value}) => `${valueName}_of_${suitName}`,
+        });
+        
+        me.cardSprite = PIXI.Sprite.fromImage(`./images/cards/${imageNameFromCard}.png`);
+        me.addChild(me.cardSprite);
+        me.cardSprite.scale.x = CardComponent.SCALE_VALUE;
+        me.cardSprite.scale.y = CardComponent.SCALE_VALUE;
     }
 
     move(x, y)

@@ -11,6 +11,9 @@
 				import './node_modules/pixi.js/dist/pixi.js';
 				import './node_modules/folktale/dist/umd/folktale.js';
 				import CardComponent from './CardComponent.js';
+				import Button from './Button.js';
+				import './node_modules/rx/dist/rx.all.js';
+				import Hand from './Hand.js';
 
 				import {
 					CardValue,
@@ -18,7 +21,7 @@
 					Card,
 					Player,
 					GameOver
-			} from './types.js';
+				} from './types.js';
 				import { game } from './index.js';
 
 				const log = console.log;
@@ -26,51 +29,71 @@
 				const Maybe = folktale.maybe;
 				document.body.appendChild(app.view);
 
-				
 				const lake = new PIXI.Graphics();
 				lake.interactive = true;
 				lake.beginFill(0x01ADFB);
 				lake.drawRect(0, 0, app.renderer.width, app.renderer.height);
 				app.stage.addChild(lake);
 
-				// const sampleCard = Card.NoFace(Suit.Club(), CardValue.RegularValue(2));
-				// const card = new CardComponent(app.stage, sampleCard);
-				// card.scale.x = 0.25;
-				// card.scale.y = 0.25;
+				const hitButton = new Button(app.stage, 'Hit');
+				hitButton.x = 20;
+				hitButton.y = 300;
 
-				const drawHand = (cards, score, startX, startY, isDealer=false) => {
-						const titleTextValue = isDealer ? 'Dealer' : 'You';
-						const titleText = new PIXI.Text(`${titleTextValue}`, {fontFamily : 'Arial', fontSize: 24, fill : 0xFFFFFF, align : 'center'});
-						app.stage.addChild(titleText);
-						titleText.x = startX;
-						const scoreText = new PIXI.Text(`Total: ${score}`, {fontFamily : 'Arial', fontSize: 18, fill : 0xFFFFFF, align : 'center'});
-						scoreText.x = startX;
-						scoreText.y = titleText.y + titleText.height;
-						startY = scoreText.y + scoreText.height;
-						app.stage.addChild(scoreText);
-						const cardComponents = _.chain(cards)
-						.map(card => {
-							const cardComponent = new CardComponent(app.stage, card, startX, startY);
-							startX += cardComponent.width;
-							return cardComponent
-						})
-						.value();
-						return {scoreText, cardComponents};
+				const standButton = new Button(app.stage, 'Stand');
+				standButton.x = 120;
+				standButton.y = 300;
+
+				const doubleDownButton = new Button(app.stage, 'Double Down');
+				doubleDownButton.x = 220;
+				doubleDownButton.y = 300;
+
+				const playerActions = new Rx.Subject();
+				log("playerActions:", playerActions);
+				hitButton.on('pointerup', ()=> playerActions.onNext('hit'));
+				standButton.on('pointerup', ()=> playerActions.onNext('stand'));
+				doubleDownButton.on('pointerup', ()=> playerActions.onNext('doubledown'));
+
+				const showButtons = show => {
+					hitButton.visible = standButton.visible = doubleDownButton.visible = show;
 				};
 
+				const playerHand = new Hand(app.stage, 20, 40);
+				const dealerHand = new Hand(app.stage, 320, 40);
+
+				
 
 
+				showButtons(false);
 				const newGame = game();
 				const initialDeck = newGame.next().value.deck;
 				let player, score, dealer, value;
 				value = newGame.next().value;
 				player = value.player;
 				score = value.score;
-				drawHand(player, score, 20, 40);
+				playerHand.redraw(player, score);
 				value = newGame.next().value;
 				dealer = value.dealer;
 				score = value.score;
-				drawHand(dealer, score, 300, 40, true);
+				dealerHand.redraw(dealer, score, true);
+				value = newGame.next().value;
+				showButtons(true);
+				new Promise( success =>{
+					let playerActionsSubscription = playerActions.subscribe(
+						action => {
+							value = newGame.next(action).value;
+							playerActionsSubscription.dispose();
+							success(value);
+						}
+					);
+				})
+				.then(value =>
+				{
+					player = value.player;
+					score = value.score;
+					playerHand.redraw(player, score);
+				});
+				
+
 				
 
 				

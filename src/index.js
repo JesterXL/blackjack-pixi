@@ -159,7 +159,9 @@ export function *game()
             {
                 case 'hit':
                     latest = shoe.next(latest.cards).value;
+                    log("before:", player);
                     player = [...player, latest.card];
+                    log("after:", player);
                     if(getCardsScore(player) <= 21)
                     {
                         yield {type: 'playerHitResult', player, score: getCardsScore(player)};
@@ -167,6 +169,7 @@ export function *game()
                     }
                     else
                     {
+                        yield {type: 'playerHitResult', player, score: getCardsScore(player)};
                         return {type: 'gameOver', gameOver: GameOver.DealerWin(`Player busted with ${getCardsScore(player)}`)};
                     }
                 
@@ -174,7 +177,7 @@ export function *game()
                     yield {type: 'playerStandResult', player, score: getCardsScore(player)};
                     break;
                 
-                case 'double down':
+                case 'doubledown':
                     doubledDown = true;
                     latest = shoe.next(latest.cards).value;
                     player = [...player, latest.card];

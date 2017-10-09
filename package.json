@@ -13,7 +13,10 @@
   "dependencies": {
     "folktale": "^2.0.1",
     "lodash-es": "^4.17.4",
-    "pixi.js": "^4.5.6"
+    "pixi.js": "^4.5.6",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6",
+    "rx": "^4.1.0"
   },
   "devDependencies": {
     "browser-sync": "^2.18.13"
