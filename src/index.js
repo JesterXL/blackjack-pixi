@@ -258,12 +258,12 @@ function *game()
     }
 }
 
-const newGame = game();
-log(newGame.next().value.type);
-log(newGame.next().value.type);
-log(newGame.next().value.type);
-log(newGame.next().value.type);
-log(newGame.next('hit').value);
+// const newGame = game();
+// log(newGame.next().value.type);
+// log(newGame.next().value.type);
+// log(newGame.next().value.type);
+// log(newGame.next().value.type);
+// log(newGame.next('hit').value);
 
 module.exports = {
 };
