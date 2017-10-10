@@ -6,98 +6,107 @@
 </head>
 	
 <body>
-		<script type="module">
-				import _ from './node_modules/lodash-es/lodash.js';
-				import './node_modules/pixi.js/dist/pixi.js';
-				import './node_modules/folktale/dist/umd/folktale.js';
-				import CardComponent from './CardComponent.js';
-				import Button from './Button.js';
-				import './node_modules/rx/dist/rx.all.js';
-				import Hand from './Hand.js';
+<script type="module">
+import _ from './node_modules/lodash-es/lodash.js';
+import './node_modules/pixi.js/dist/pixi.js';
+import './node_modules/folktale/dist/umd/folktale.js';
+import CardComponent from './CardComponent.js';
+import Button from './Button.js';
+import './node_modules/rx/dist/rx.all.js';
+import Hand from './Hand.js';
 
-				import {
-					CardValue,
-					Suit,
-					Card,
-					Player,
-					GameOver
-				} from './types.js';
-				import { game } from './index.js';
+import {
+	CardValue,
+	Suit,
+	Card,
+	Player,
+	GameOver
+} from './types.js';
+import { game } from './index.js';
 
-				const log = console.log;
-				const app = new PIXI.Application();
-				const Maybe = folktale.maybe;
-				document.body.appendChild(app.view);
+const log = console.log;
+const app = new PIXI.Application();
+const Maybe = folktale.maybe;
+document.body.appendChild(app.view);
 
-				const lake = new PIXI.Graphics();
-				lake.interactive = true;
-				lake.beginFill(0x01ADFB);
-				lake.drawRect(0, 0, app.renderer.width, app.renderer.height);
-				app.stage.addChild(lake);
+const lake = new PIXI.Graphics();
+lake.interactive = true;
+lake.beginFill(0x01ADFB);
+lake.drawRect(0, 0, app.renderer.width, app.renderer.height);
+app.stage.addChild(lake);
 
-				const hitButton = new Button(app.stage, 'Hit');
-				hitButton.x = 20;
-				hitButton.y = 300;
+const hitButton = new Button(app.stage, 'Hit');
+hitButton.x = 20;
+hitButton.y = 300;
 
-				const standButton = new Button(app.stage, 'Stand');
-				standButton.x = 120;
-				standButton.y = 300;
+const standButton = new Button(app.stage, 'Stand');
+standButton.x = 120;
+standButton.y = 300;
 
-				const doubleDownButton = new Button(app.stage, 'Double Down');
-				doubleDownButton.x = 220;
-				doubleDownButton.y = 300;
+const doubleDownButton = new Button(app.stage, 'Double Down');
+doubleDownButton.x = 220;
+doubleDownButton.y = 300;
 
-				const playerActions = new Rx.Subject();
-				log("playerActions:", playerActions);
-				hitButton.on('pointerup', ()=> playerActions.onNext('hit'));
-				standButton.on('pointerup', ()=> playerActions.onNext('stand'));
-				doubleDownButton.on('pointerup', ()=> playerActions.onNext('doubledown'));
+const playerActions = new Rx.Subject();
+log("playerActions:", playerActions);
+hitButton.on('pointerup', ()=> playerActions.onNext('hit'));
+standButton.on('pointerup', ()=> playerActions.onNext('stand'));
+doubleDownButton.on('pointerup', ()=> playerActions.onNext('doubledown'));
 
-				const showButtons = show => {
-					hitButton.visible = standButton.visible = doubleDownButton.visible = show;
-				};
+const showButtons = show => {
+	hitButton.visible = standButton.visible = doubleDownButton.visible = show;
+};
 
-				const playerHand = new Hand(app.stage, 20, 40);
-				const dealerHand = new Hand(app.stage, 320, 40);
+const playerHand = new Hand(app.stage, 20, 40);
+const dealerHand = new Hand(app.stage, 320, 40);
+
+function *pixiBlackjack()
+{
+	showButtons(false);
+	const newGame = game();
+	const initialDeck = newGame.next().value.deck;
+	let player, score, dealer, value;
+	value = newGame.next().value;
+	player = value.player;
+	score = value.score;
+	playerHand.redraw(player, score);
+	value = newGame.next().value;
+	dealer = value.dealer;
+	score = value.score;
+	dealerHand.redraw(dealer, score, true);
+	value = newGame.next().value;
+	showButtons(true);
+	while(true)
+	{
+		new Promise( success =>{
+			let playerActionsSubscription = playerActions.subscribe(
+				action => {
+					value = newGame.next(action).value;
+					playerActionsSubscription.dispose();
+					success(value);
+				}
+			);
+		})
+		.then(value =>
+		{
+			player = value.player;
+			score = value.score;
+			playerHand.redraw(player, score);
+		});
+		yield 'cow'
+	}
+	
+	
+}
+
+const newPixiBlackjackGame = pixiBlackjack();
+newPixiBlackjackGame.next();
+				
 
 				
 
-
-				showButtons(false);
-				const newGame = game();
-				const initialDeck = newGame.next().value.deck;
-				let player, score, dealer, value;
-				value = newGame.next().value;
-				player = value.player;
-				score = value.score;
-				playerHand.redraw(player, score);
-				value = newGame.next().value;
-				dealer = value.dealer;
-				score = value.score;
-				dealerHand.redraw(dealer, score, true);
-				value = newGame.next().value;
-				showButtons(true);
-				new Promise( success =>{
-					let playerActionsSubscription = playerActions.subscribe(
-						action => {
-							value = newGame.next(action).value;
-							playerActionsSubscription.dispose();
-							success(value);
-						}
-					);
-				})
-				.then(value =>
-				{
-					player = value.player;
-					score = value.score;
-					playerHand.redraw(player, score);
-				});
 				
 
-				
-
-				
-
-				</script>
+</script>
 </body>
 </html>
