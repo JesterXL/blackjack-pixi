@@ -1,4 +1,4 @@
-import '../node_modules/pixi.js/dist/pixi.js';
+
 export default class Button extends PIXI.Container
 {
     constructor(parent=undefined, text, width=100, height=60)

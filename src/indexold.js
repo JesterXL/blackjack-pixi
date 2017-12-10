@@ -1,19 +1,12 @@
-<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Hello World</title>
-</head>
-	
-<body>
-<script type="module">
-import _ from './node_modules/lodash-es/lodash.js';
-import './node_modules/pixi.js/dist/pixi.js';
-import './node_modules/folktale/dist/umd/folktale.js';
-import CardComponent from './CardComponent.js';
-import Button from './Button.js';
-import './node_modules/rx/dist/rx.all.js';
-import Hand from './Hand.js';
+
+import { createStore } from 'redux'
+import _ from 'lodash';
+import * as PIXI from 'pixi.js'
+import './images';
+import CardComponent from './CardComponent';
+import Button from './Button';
+import Rx from 'rx';
+import Hand from './Hand';
 
 import {
 	CardValue,
@@ -21,12 +14,22 @@ import {
 	Card,
 	Player,
 	GameOver
-} from './types.js';
-import { game } from './index.js';
+} from './types';
+import { game } from './index';
+import { cardGame } from './reducers/cardgame';
+const Maybe = require('folktale/maybe');
 
 const log = console.log;
+
+// const Provider = ReactRedux.Provider;
+// const connect = ReactRedux.connect;
+
+const store = createStore(cardGame,
+	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+store.dispatch({type: 'cow'});
+
 const app = new PIXI.Application();
-const Maybe = folktale.maybe;
+log("app:", app);
 document.body.appendChild(app.view);
 
 const lake = new PIXI.Graphics();
@@ -106,7 +109,3 @@ newPixiBlackjackGame.next();
 				
 
 				
-
-</script>
-</body>
-</html>

@@ -1,4 +1,4 @@
-import '../node_modules/pixi.js/dist/pixi.js';
+
 export default class CardBackground extends PIXI.Graphics
 {
     constructor(parent=undefined, width=222, height=323)

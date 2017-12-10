@@ -1,9 +1,7 @@
-const log = console.log;
+import union from 'folktale/adt/union/union';
+import Equality from 'folktale/adt/union/derivations/equality';
+import _ from 'lodash';
 
-import './node_modules/folktale/dist/umd/folktale.js';
-const union = folktale.adt.union.union;
-const Equality = folktale.adt.union.derivations.equality;
-import _ from './node_modules/lodash-es/lodash.js';
 
 // -- Types ----------------------------------------
 import {
@@ -12,10 +10,12 @@ import {
     Card,
     Player,
     GameOver
-} from './types.js';
+} from './types';
 const { RegularValue, AceValues } = CardValue;
 const { Club, Diamond, Heart, Spade } = Suit;
 const { Jack, Queen, King, Ace, NoFace } = Card;
+
+const log = console.log;
 
 // -- Factory Functions ----------------------------------------
 

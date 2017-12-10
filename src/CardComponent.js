@@ -1,12 +1,13 @@
-import './node_modules/pixi.js/dist/pixi.js';
+
 import {
     CardValue,
     Suit,
     Card,
     Player,
     GameOver
-} from './types.js';
-import CardBackground from './CardBackground.js';
+} from './types';
+import CardBackground from './CardBackground';
+import { cardImages } from './images';
 const log = console.log;
 
 export default class CardComponent extends PIXI.Container
@@ -73,7 +74,8 @@ export default class CardComponent extends PIXI.Container
             NoFace: ({value}) => `${valueName}_of_${suitName}`,
         });
         
-        me.cardSprite = PIXI.Sprite.fromImage(`./images/cards/${imageNameFromCard}.png`);
+        const url = cardImages[imageNameFromCard];
+        me.cardSprite = PIXI.Sprite.fromImage('./dist/' + url);
         me.addChild(me.cardSprite);
         me.cardSprite.scale.x = CardComponent.SCALE_VALUE;
         me.cardSprite.scale.y = CardComponent.SCALE_VALUE;

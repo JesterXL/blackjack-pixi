@@ -1,6 +1,5 @@
-import '../node_modules/folktale/dist/umd/folktale.js';
-const union = folktale.adt.union.union;
-const Equality = folktale.adt.union.derivations.equality;
+import union from 'folktale/adt/union/union';
+import Equality from 'folktale/adt/union/derivations/equality';
 
 export const CardValue = union('CardValue', {
     RegularValue(value) { return { value } },

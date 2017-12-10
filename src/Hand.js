@@ -1,6 +1,6 @@
-import './node_modules/pixi.js/dist/pixi.js';
-import CardComponent from './CardComponent.js';
-import _ from '../node_modules/lodash-es/lodash.js';
+
+import CardComponent from './CardComponent';
+import _ from 'lodash';
 const log = console.log;
 
 export default class Hand extends PIXI.Container
