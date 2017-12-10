@@ -1,4 +1,5 @@
 
+import 'babel-polyfill';
 import { createStore } from 'redux'
 import _ from 'lodash';
 import * as PIXI from 'pixi.js'
@@ -20,9 +21,6 @@ import { cardGame } from './reducers/cardgame';
 const Maybe = require('folktale/maybe');
 
 const log = console.log;
-
-// const Provider = ReactRedux.Provider;
-// const connect = ReactRedux.connect;
 
 const store = createStore(cardGame,
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());

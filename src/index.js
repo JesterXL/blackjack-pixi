@@ -63,9 +63,7 @@ const createNewShuffledDeck = () =>
     .shuffle()
     .value();
 
-
-
-
+    
 // -- Game Functions ------------------
 
 function *drawCard(cards)
@@ -236,9 +234,9 @@ export function *game()
     }
 }
 
-// const newGame = game();
-// log(newGame.next().value.type);
-// log(newGame.next().value.type);
-// log(newGame.next().value.type);
-// log(newGame.next().value.type);
-// log(newGame.next('hit').value);
+const newGame = game();
+log(newGame.next().value.type);
+log(newGame.next().value.type);
+log(newGame.next().value.type);
+log(newGame.next().value.type);
+log(newGame.next('hit').value);
