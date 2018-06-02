@@ -75,7 +75,7 @@ export default class CardComponent extends PIXI.Container
         });
         
         const url = cardImages[imageNameFromCard];
-        me.cardSprite = PIXI.Sprite.fromImage('./dist/' + url);
+        me.cardSprite = PIXI.Sprite.fromImage(url);
         me.addChild(me.cardSprite);
         me.cardSprite.scale.x = CardComponent.SCALE_VALUE;
         me.cardSprite.scale.y = CardComponent.SCALE_VALUE;
